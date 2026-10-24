@@ -29,6 +29,12 @@ class Board:
         # return whether the position is determined to be an invalid position (corner)
         return is_corner_row and is_corner_col
 
+    def is_diamond_corner(self, row, col):
+        pass
+
+    def is_hexagon_corner(selfm, row, col):
+        pass
+
     def is_valid_move(self, start_pos, end_pos):  # pos parameters are tuples
         # unpack coordinates
         r1, c1 = start_pos
@@ -78,7 +84,7 @@ class Board:
 
         # Find peg that is being jumped over
         target_pos_r = r1 + ((r2 - r1) // 2)
-        target_pos_c = c2 + ((c2 - c1) // 2)
+        target_pos_c = c1 + ((c2 - c1) // 2)
 
         # === Update Board ===
         # Change starting position to empty
@@ -99,10 +105,10 @@ class Board:
                 # if it has a peg, check for a valid move
                 if current_value == "PEG":
                     if (
-                        self.is_valid_move((current_pos), (row - 1, col))  # down
-                        or self.is_valid_move((current_pos), (row + 1, col))  # up
-                        or self.is_valid_move((current_pos), (row, col - 1))  # left
-                        or self.is_valid_move((current_pos), (row, col + 1))  # right
+                        self.is_valid_move((current_pos), (row - 2, col))  # down
+                        or self.is_valid_move((current_pos), (row + 2, col))  # up
+                        or self.is_valid_move((current_pos), (row, col - 2))  # left
+                        or self.is_valid_move((current_pos), (row, col + 2))  # right
                     ):
                         return True
         return False

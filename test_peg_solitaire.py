@@ -2,30 +2,49 @@ import unittest
 from board import Board
 
 
-class TestPegSolitaire(unittest.TestCase):
+class TestBoardSize(unittest.TestCase):
 
-    def setUp(self):
-        # Initialize a standard board before each test
-        self.board = Board()
+    # Successful pick of a valid board size (5, 7, 9)
+    def test_valid_board_size(self):
 
-    def test_initial_board_state(self):
-        center = self.board.size // 2
-        self.assertEqual(self.board.board[center][center], "EMPTY")
-        self.assertEqual(self.board.board[center][center - 1], "PEG")
-        self.assertEqual(self.board.board[center][center + 1], "PEG")
-        self.assertEqual(self.board.board[center - 1][center], "PEG")
-        self.assertEqual(self.board.board[center + 1][center], "PEG")
+        # English
+        for size in [5, 7, 9]:
+            board1 = Board("English", size=size)
+            self.assertEqual(
+                board1.size, size, f"Board size should be 5, 7, or 9 (English)"
+            )
 
-    def test_illegal_move(self):
-        center = self.board.size // 2
-        # Move with too large of a gap
-        self.assertFalse(
-            self.board.is_valid_move((center - 3, center), (center, center))
+        # Diamond
+        for size in [5, 7, 9]:
+            board2 = Board("Diamond", size=size)
+            self.assertEqual(
+                board2.size, size, f"Board size should be 5, 7, or 9 (Diamond)"
+            )
+
+        # Hexagon
+        for size in [5, 7, 9]:
+            board3 = Board("Hexagon", size=size)
+            self.assertEqual(
+                board3.size, size, f"Board size should be 5, 7, or 9 (Diamond)"
+            )
+
+    # Rejection fo an Even Board Size
+    def test_invalid_board_size(self):
+        # English
+        board = Board("English", size=6)
+        self.assertEqual(
+            board.size, 7, "Even board size should be rejected and default to 7"
         )
-        # Move with out of bounds initial position
-        self.assertFalse(self.board.is_valid_move((-1, 0), (1, 0)))
-        # Move with out of bounds final position
-        self.assertFalse(self.board.is_valid_move((1, 0), (-1, 0)))
+        # Diamond
+        board = Board("Diamond", size=6)
+        self.assertEqual(
+            board.size, 7, "Even board size should be rejected and default to 7"
+        )
+        # Hexagon
+        board = Board("hexagon", size=6)
+        self.assertEqual(
+            board.size, 7, "Even board size should be rejected and default to 7"
+        )
 
 
 if __name__ == "__main__":

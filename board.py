@@ -10,6 +10,10 @@ class Board:
             for col in range(size):  # fill out the columns for that row
                 if self.board_type == "English" and self.is_english_corner(row, col):
                     row_list.append("INVALID")
+                elif self.board_type == "Diamond" and self.is_diamond_corner(row, col):
+                    row_list.append("INVALID")
+                elif self.board_type == "Hexagon" and self.is_hexagon_corner(row, col):
+                    row_list.append("INVALID")
                 else:
                     row_list.append("PEG")
             # add new row array into board, making it 2D
@@ -30,10 +34,18 @@ class Board:
         return is_corner_row and is_corner_col
 
     def is_diamond_corner(self, row, col):
-        pass
+        center = self.size // 2
+        # if the combined row and colum exceeds the center radius
+        return abs(row - center) + abs(col - center) > center
 
-    def is_hexagon_corner(selfm, row, col):
-        pass
+    def is_hexagon_corner(self, row, col):
+        corner_depth = (self.size - 3) // 2
+
+        # Mark out the corners
+        top_left = (row + col) < corner_depth
+        top_right = row + (self.size - 1 - col) < corner_depth
+        bottom_left = ((self.size - 1 - row) + col) < corner_depth
+        bottom_right = ((self.size - 1 - row) + (self.size - 1 - col)) < corner_depth
 
     def is_valid_move(self, start_pos, end_pos):  # pos parameters are tuples
         # unpack coordinates

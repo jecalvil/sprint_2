@@ -1,4 +1,8 @@
 class Board:
+    VALID_SIZES = (5, 7, 9)
+    VALID_TYPES = ("English", "Hexagon", "Diamond")
+    DEFAULT_SIZE = 7
+
     JUMP_DIRECTIONS = [
         (-2, 0),  # up
         (2, 0),  # down
@@ -90,6 +94,17 @@ class Board:
 
         # returns true if it contains peg, false otherwise
         return self.board[mid_r][mid_c] == "PEG"
+
+    def get_legal_moves(self, pos):
+        r, c = pos
+        legal_moves = []
+
+        for dr, dc in self.JUMP_DIRECTIONS:
+            dest = (r + dr, c + dc)
+            if self.is_valid_move(pos, dest):
+                legal_moves.append(dest)
+
+        return legal_moves
 
     def make_move(self, start_pos, end_pos):
         # Check for valid move

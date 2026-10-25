@@ -1,4 +1,15 @@
 class Board:
+    JUMP_DIRECTIONS = [
+        (-2, 0),  # up
+        (2, 0),  # down
+        (0, -2),  # left
+        (0, 2),  # right
+        (-2, -2),  # up-left
+        (-2, 2),  # up-right
+        (2, -2),  # down-left
+        (2, 2),  # down-right
+    ]
+
     def __init__(self, board_type="English", size=7):  # English and size 7 default
         self.board_type = board_type
         self.size = size
@@ -67,24 +78,17 @@ class Board:
         if self.board[r1][c1] != "PEG" or self.board[r2][c2] != "EMPTY":
             return False
 
-        # check their distance, must be exactly a distance of 2 spaces
+        # the jump must be exactly 2 cells in one of the allowed directions
         row_diff = r2 - r1
         col_diff = c2 - c1
-
-        # valid horizontal, row stays the same (0 distance), while column difference is 2
-        is_horizontal = row_diff == 0 and abs(col_diff) == 2
-        # valid vertical, row difference is 2, while row distance is the same (0 distance)
-        is_vertical = col_diff == 0 and abs(row_diff) == 2
-
-        # if neither are met then return false
-        if not (is_vertical or is_horizontal):
+        if (row_diff, col_diff) not in self.JUMP_DIRECTIONS:
             return False
 
         # check if jumped over position contains peg
         mid_r = r1 + row_diff // 2
         mid_c = c1 + col_diff // 2
 
-        # returns true if it conatins peg, false otherwise
+        # returns true if it contains peg, false otherwise
         return self.board[mid_r][mid_c] == "PEG"
 
     def make_move(self, start_pos, end_pos):
@@ -114,17 +118,11 @@ class Board:
         # Go through each position, if there is a peg, check if there is a valid move
         for row in range(self.size):
             for col in range(self.size):
-                current_value = self.board[row][col]
-                current_pos = (row, col)
-                # if it has a peg, check for a valid move
-                if current_value == "PEG":
-                    if (
-                        self.is_valid_move((current_pos), (row - 2, col))  # down
-                        or self.is_valid_move((current_pos), (row + 2, col))  # up
-                        or self.is_valid_move((current_pos), (row, col - 2))  # left
-                        or self.is_valid_move((current_pos), (row, col + 2))  # right
-                    ):
-                        return True
+                if self.board[row][col] == "PEG":
+                    current_pos = (row, col)
+                    for d_row, d_col in self.JUMP_DIRECTIONS:
+                        if self.is_valid_move(current_pos, (row + d_row, col + d_col)):
+                            return True
         return False
 
     def check_win(self):

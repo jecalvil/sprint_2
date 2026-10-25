@@ -47,6 +47,8 @@ class Board:
         bottom_left = ((self.size - 1 - row) + col) < corner_depth
         bottom_right = ((self.size - 1 - row) + (self.size - 1 - col)) < corner_depth
 
+        return top_left or top_right or bottom_left or bottom_right
+
     def is_valid_move(self, start_pos, end_pos):  # pos parameters are tuples
         # unpack coordinates
         r1, c1 = start_pos
@@ -126,17 +128,12 @@ class Board:
         return False
 
     def check_win(self):
-        # check if the game is over
-        if self.game_over_check():
-            # Count the number of pegs
-            peg_count = 0
-            for row in range(self.size):
-                for col in range(self.size):
-                    if self.board[row][col] == "PEG":
-                        peg_count = peg_count + 1
+        # Count the total number of pegs currently on the board
+        peg_count = 0
+        for row in range(self.size):
+            for col in range(self.size):
+                if self.board[row][col] == "PEG":
+                    peg_count += 1
 
-            # Determine if they have won or lost
-            return peg_count == 1
-
-        # game is not over
-        return False
+        # A win is achieved when exactly 1 peg remains
+        return peg_count == 1

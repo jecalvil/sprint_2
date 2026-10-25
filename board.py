@@ -137,3 +137,19 @@ class Board:
 
         # A win is achieved when exactly 1 peg remains
         return peg_count == 1
+
+    def get_rating(self):
+        peg_count = 0
+        for row in range(self.size):
+            for col in range(self.size):
+                if self.board[row][col] == "PEG":
+                    peg_count += 1
+
+        if peg_count == 1:
+            return "Rating: Outstanding (1 marble left)"
+        elif peg_count == 2:
+            return "Rating: Very Good (2 marbles left)"
+        elif peg_count == 3:
+            return "Rating: Good (3 marbles left)"
+        else:
+            return f"Rating: Average 4 or more left ({peg_count} left)"

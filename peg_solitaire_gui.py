@@ -169,7 +169,10 @@ def game_screen(board_type, size):
     back_button = components.MenuButton(
         "BACK", small_font, "White", "Yellow", (100, 50)
     )
-    # Play Again Button
+    # Restart Button
+    restart_button = components.MenuButton(
+        "RESTART", small_font, "White", "Yellow", (1180, 50)
+    )
 
     while True:
         SCREEN.fill((30, 30, 30))
@@ -198,6 +201,12 @@ def game_screen(board_type, size):
         title_surface = title_font.render(title_text, True, "White")
         title_rect = title_surface.get_rect(center=(640, 50))
         SCREEN.blit(title_surface, title_rect)
+
+        if game_over_text:
+            rating_text = game_board.get_rating()
+            rating_surface = small_font.render(rating_text, True, "Yellow")
+            rating_rect = rating_surface.get_rect(center=(640, 90))
+            SCREEN.blit(rating_surface, rating_rect)
 
         # Display Board Type Title
         mode_surface = small_font.render("BOARD TYPE:", True, "White")
@@ -253,6 +262,7 @@ def game_screen(board_type, size):
 
         # Draw the Navigation buttons
         back_button.draw(SCREEN, mouse_pos)
+        restart_button.draw(SCREEN, mouse_pos)
 
         # Event Loop
         for event in pygame.event.get():
@@ -264,6 +274,17 @@ def game_screen(board_type, size):
                 # Back button
                 if back_button.check_click(event.pos):
                     return
+
+                # Restart button
+                if restart_button.check_click(event.pos):
+                    game_board = board.Board(board_type, size)
+                    selected_peg = None
+                    game_over_text = None
+                    continue
+
+                # Make sure grid clicks only active when game is not over
+                if game_over_text is not None:
+                    continue
 
                 # Grid click
                 mouse_x, mouse_y = event.pos
@@ -296,13 +317,15 @@ def game_screen(board_type, size):
 
                         # Making a move
                         elif cell_value == "EMPTY":
-                            if game_board.make_move(
-                                selected_peg, (clicked_row, clicked_col)
-                            ):
-                                selected_peg = None  # Deselect peg after move is made
-
-                        else:
-                            selected_peg = None  # reset on
+                            if selected_peg is not None:
+                                if game_board.make_move(
+                                    selected_peg, (clicked_row, clicked_col)
+                                ):
+                                    selected_peg = (
+                                        None  # Deselect peg after move is made
+                                    )
+                            else:
+                                selected_peg = None
         pygame.display.update()
         clock.tick(60)
 

@@ -329,7 +329,63 @@ class TestGameOver(unittest.TestCase):
         pass
 
 
-# Test and and play a winning game
+# Claude Generated test for a playthrough - Story 5
+class TestWinningPlaythrough(unittest.TestCase):
+    """Plays a complete, known-valid solution on English 7 and checks for a win."""
+
+    # Each entry is (start (row, col), end (row, col)); 31 moves total
+    ENGLISH_7_SOLUTION = [
+        ((1, 3), (3, 3)),
+        ((2, 1), (2, 3)),
+        ((0, 2), (2, 2)),
+        ((0, 4), (0, 2)),
+        ((2, 3), (2, 1)),
+        ((2, 0), (2, 2)),
+        ((2, 4), (0, 4)),
+        ((2, 6), (2, 4)),
+        ((3, 2), (1, 2)),
+        ((0, 2), (2, 2)),
+        ((3, 0), (3, 2)),
+        ((3, 2), (1, 2)),
+        ((3, 4), (3, 2)),
+        ((3, 6), (3, 4)),
+        ((3, 4), (1, 4)),
+        ((0, 4), (2, 4)),
+        ((4, 2), (2, 2)),
+        ((1, 2), (3, 2)),
+        ((4, 0), (4, 2)),
+        ((4, 3), (4, 1)),
+        ((5, 4), (3, 4)),
+        ((4, 6), (4, 4)),
+        ((6, 2), (4, 2)),
+        ((3, 2), (5, 2)),
+        ((6, 4), (6, 2)),
+        ((6, 2), (4, 2)),
+        ((4, 1), (4, 3)),
+        ((4, 3), (4, 5)),
+        ((2, 4), (4, 4)),
+        ((4, 5), (4, 3)),
+        ((4, 3), (6, 3)),
+    ]
+
+    def test_english_7_full_winning_game(self):
+        game = Board("English", 7)
+        self.assertEqual(game.count_pegs(), 32)
+
+        for move_number, (start, end) in enumerate(self.ENGLISH_7_SOLUTION, 1):
+            with self.subTest(move=move_number, start=start, end=end):
+                self.assertTrue(
+                    game.make_move(start, end),
+                    f"Move {move_number} {start} -> {end} was rejected",
+                )
+
+        # Exactly one peg left = win (position doesn't matter)
+        self.assertEqual(game.count_pegs(), 1)
+        self.assertTrue(game.check_win())
+        self.assertFalse(game.game_over_check())
+        self.assertEqual(game.get_rating(), "Rating: Outstanding (1 marble left)")
+
+
 # =========== Run the tests=================
 if __name__ == "__main__":
     unittest.main()

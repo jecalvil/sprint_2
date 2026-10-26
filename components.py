@@ -1,10 +1,6 @@
 import pygame
 
 
-class PegComponent:
-    pass
-
-
 class MenuButton:
     """A clickable text button that changes color upon hovering over."""
 

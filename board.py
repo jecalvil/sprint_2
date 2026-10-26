@@ -15,6 +15,17 @@ class Board:
     ]
 
     def __init__(self, board_type="English", size=7):  # English and size 7 default
+        # Needed code for some earlier bug fix checks iwth unit tests
+        # match the board type no matter the capitalization ("hexagon" -> "Hexagon") # Bug fix from earlier test cases
+        board_type = str(board_type).capitalize()
+        if board_type not in Board.VALID_TYPES:
+            raise ValueError(f"Unknown board type: {board_type}")
+
+        # an invalid size (even, out of range, not a number) uses the default size
+        if not Board.is_valid_size(size):
+            size = Board.DEFAULT_SIZE
+        size = int(size)  # in case the size came in as text like "7"
+
         self.board_type = board_type
         self.size = size
 
@@ -106,6 +117,18 @@ class Board:
 
         return legal_moves
 
+    def is_valid_size(value):
+        # Checks to see if valid size
+        if isinstance(value, bool):
+            return False
+
+        if isinstance(value, str):
+            value = value.strip()
+            if not value.isdigit():
+                return False
+
+        return isinstance(value, (int, str)) and int(value) in Board.VALID_SIZES
+
     def make_move(self, start_pos, end_pos):
         # Check for valid move
         if not self.is_valid_move(start_pos, end_pos):
@@ -166,3 +189,11 @@ class Board:
             return "Rating: Good (3 marbles left)"
         else:
             return f"Rating: Average 4 or more left ({peg_count} left)"
+
+    def count_pegs(self):
+        peg_count = 0
+        for row in range(self.size):
+            for col in range(self.size):
+                if self.board[row][col] == "PEG":
+                    peg_count += 1
+        return peg_count

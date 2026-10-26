@@ -10,7 +10,10 @@ pygame.init()
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Theme Paths
+
 # Future Implementation
+
+# Music Paths - Future Implementation
 
 # Font Paths
 FONT_PATH = os.path.join(SCRIPT_DIR, "PressStart2P-Regular.ttf")

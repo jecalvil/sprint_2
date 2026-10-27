@@ -5,6 +5,7 @@ class MenuButton:
     """A clickable text button that changes color upon hovering over."""
 
     def __init__(self, text, font, text_color, hover_color, center_pos):
+        """Initializes MenuButton, with text, font, text color, hover color, and position"""
         self.text = text
         self.font = font
         self.text_color = text_color
@@ -30,6 +31,7 @@ class RadioButton:
     """A circular radio button with a text label."""
 
     def __init__(self, x, y, radius, label, value, font):
+        """Initializes Radio Button with location, radius, label, value, and font"""
         self.center = (x, y)
         self.radius = radius
         self.label = label

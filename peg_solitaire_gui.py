@@ -1,6 +1,7 @@
-import pygame
 import os
 import sys
+
+import pygame
 
 import components
 import board
@@ -20,7 +21,10 @@ FONT_PATH = os.path.join(SCRIPT_DIR, "PressStart2P-Regular.ttf")
 
 
 class PegSolitaireApp:
+    """Main application controller for the Peg Solitaire game, managing screens, settings, and game states"""
+
     def __init__(self):
+        """Initializes Pygame Window, window caption, font assetss, and eventually themes"""
         # Create screen
         self.screen = pygame.display.set_mode((1280, 720))
         pygame.display.set_caption("Peg Solitaire - Menu")
@@ -35,9 +39,11 @@ class PegSolitaireApp:
         self.small_font = pygame.font.Font(FONT_PATH, 20)
 
     def run(self):
+        """Starts the application loop by launching the main menu."""
         self.menu_screen()
 
     def menu_screen(self):
+        """Handles the main loop, rendering buttons, mouse input, and screen transitioning"""
         clock = pygame.time.Clock()
 
         # Menu buttons
@@ -83,6 +89,7 @@ class PegSolitaireApp:
             clock.tick(60)
 
     def options_screen(self):
+        """Manages settings menu where players select preferred board type and size."""
         clock = pygame.time.Clock()
 
         # Create settings buttons
@@ -176,6 +183,7 @@ class PegSolitaireApp:
             clock.tick(60)
 
     def game_screen(self, board_type, size):
+        """Controls active gameplay loop, board rendering, peg selection, move validation, and win/loss states"""
         clock = pygame.time.Clock()
         game_board = board.Board(board_type, size)
         selected_peg = None

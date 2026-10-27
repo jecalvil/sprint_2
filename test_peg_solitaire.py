@@ -1,4 +1,5 @@
 import unittest
+
 from board import Board
 
 
@@ -60,9 +61,11 @@ def make_board_with_peg_count(peg_count):
 
 # Story 1 - Choose board size ==================================
 class TestBoardSize(unittest.TestCase):
+    """Unit tests for validating board size selection and error handling."""
 
     # Successful pick of a valid board size (5, 7, 9)
     def test_valid_board_size(self):
+        """Verifies that valid board sizes (5, 7, and 9) are successfully accepted across all board types."""
 
         # English
         for size in [5, 7, 9]:
@@ -87,6 +90,7 @@ class TestBoardSize(unittest.TestCase):
 
     # Rejection fo an Even Board Size - 6
     def test_invalid_board_size(self):
+        """Verifies that even board sizes (such as 6) are rejected and default to 7."""
         # English
         board = Board("English", size=6)
         self.assertEqual(
@@ -105,18 +109,21 @@ class TestBoardSize(unittest.TestCase):
 
     # Rejection of other even board sizes, default to 7
     def test_other_even_sizes_rejected(self):
+        """Verifies that various even board sizes correctly fail validation and fall back to the default size."""
         for bad_size in [4, 8, 10]:
             self.assertFalse(Board.is_valid_size(bad_size), f"{bad_size} is even")
             self.assertEqual(Board("English", bad_size).size, 7)
 
     # Out of range (negative, small, 0, too large)
     def test_out_of_range_rejected(self):
+        """Verifies that out-of-range dimensions (negative, zero, too small, or too large) are rejected and default to 7."""
         for bad_size in [3, 1, 0, -7, 11, 100]:
             self.assertFalse(Board.is_valid_size(bad_size), f"{bad_size} out of range")
             self.assertEqual(Board("English", bad_size).size, 7)
 
     # other symbols, decimals, and values
     def test_non_numeric_rejected(self):
+        """Verifies that non-numeric, decimal, boolean, and empty inputs for board size are rejected"""
         for bad_size in ["", " ", "abc", "#", "7.1", "-7", 7.1, None, True]:
             self.assertFalse(Board.is_valid_size(bad_size), f"{bad_size!r} not a size")
             self.assertEqual(Board("English", bad_size).size, 7)
@@ -124,12 +131,14 @@ class TestBoardSize(unittest.TestCase):
     # I have radio buttons, so text doesn't matter, but added implementation to still work just in case
     # sizes typed as text should still work
     def test_valid_sizes_accepted_as_text(self):
+        """Verifies that board sizes provided as string values are correctly parsed and accepted."""
         for text_size in ["5", "7", "9", " 7 "]:
             self.assertTrue(Board.is_valid_size(text_size))
             self.assertEqual(Board("English", text_size).size, int(text_size))
 
     # test unknown/unspecified board types
     def test_unknown_board_type_rejected(self):
+        """Verifies that unrecognized board type names raise a ValueError."""
         invalid_types = ["Triangle", "Banana", "Prism"]
         for board_type in invalid_types:
             with self.subTest(board_type=board_type):
@@ -139,8 +148,11 @@ class TestBoardSize(unittest.TestCase):
 
 # Story 3 - start a new game
 class TestNewGame(unittest.TestCase):
+    """Unit tests for initializing new game boards and checking initial counts."""
+
     # 3.1, English 7 with 33 spots, 32 pegs and one mepty hole
     def test_english_7_counts(self):
+        """Verifies initial cell and peg counts for a standard 7x7 English board."""
         game = Board("English", 7)
         self.assertEqual(count_playable_cells(game), 33)
         self.assertEqual(count_cells(game, "PEG"), 32)
@@ -148,6 +160,7 @@ class TestNewGame(unittest.TestCase):
 
     # test other english sizes
     def test_english_other_sizes(self):
+        """Verifies initial cell and peg counts for alternative English board sizes"""
         sizes_and_cells = {5: 21, 9: 45}
         for size, expected_cells in sizes_and_cells.items():
             game = Board("English", size)
@@ -160,6 +173,7 @@ class TestNewGame(unittest.TestCase):
 
     # 3.2 c     reating game of a different board size and type (Diamond and hexagon for testing)
     def test_diamond_counts(self):
+        """Verifies initial cell and peg counts for Diamond board sizes"""
         sizes_and_cells = {5: 13, 7: 25, 9: 41}
         for size, expected_cells in sizes_and_cells.items():
             game = Board("Diamond", size)
@@ -174,6 +188,7 @@ class TestNewGame(unittest.TestCase):
             )  # counts empty (should just be 1 at start)
 
     def test_hexagon_counts(self):
+        """Verifies initial cell and peg counts for Hexagon board sizes."""
         sizes_and_cells = {5: 21, 7: 37, 9: 57}
         for size, expected_cells in sizes_and_cells.items():
             game = Board("Hexagon", size)
@@ -181,9 +196,8 @@ class TestNewGame(unittest.TestCase):
             self.assertEqual(count_cells(game, "PEG"), expected_cells - 1)
             self.assertEqual(count_cells(game, "EMPTY"), 1)
 
-    def test_center_only_empty(
-        self,
-    ):  # check and see center is empty for all possibilities
+    def test_center_only_empty(self):
+        """Verifies that only the center position is empty upon starting any valid board configuration"""
         for board_type in ["English", "Diamond", "Hexagon"]:
             for size in [5, 7, 9]:
                 game = Board(board_type, size)
@@ -194,6 +208,7 @@ class TestNewGame(unittest.TestCase):
     # Rejecting ability to start new game of invalid board size (out of range   ), sitll gives 7 as board size
     # Similar to old user story 3.3, but covered under stories 1 and 2. Redundant but a valueable check
     def test_invalid_size_falls_back_to_default(self):
+        """Verifies that initializing a game with an invalid size correctly falls back to default settings."""
         for bad_size in [6, 11, "abc"]:
             game = Board("Diamond", bad_size)
             self.assertEqual(game.size, 7)
@@ -203,10 +218,11 @@ class TestNewGame(unittest.TestCase):
 # ================================CHATGPT Unit Tests=====================
 # Story 4 - make a move =================
 class TestMakeMove(unittest.TestCase):
-    """Tests for User Story 4: Make a move."""
+    """Unit tests for validating peg selection and move execution"""
 
     # AC 4.1: Selecting a peg that has a legal move.
     def test_ac_4_1_peg_has_legal_moves(self):
+        """Verifies that selecting a peg correctly identifies its legal move destinations."""
         game = make_custom_board(9, [(4, 2), (4, 3)])
 
         legal_moves = game.get_legal_moves((4, 2))
@@ -217,6 +233,7 @@ class TestMakeMove(unittest.TestCase):
 
     # AC 4.2: Making a valid jump. # modified to include a diagonal jump as well
     def test_ac_4_2_valid_jump_updates_board(self):
+        """Verifies that executing a valid orthogonal or diagonal jump correctly updates board state and peg counts."""
         # Test orthogonal jump (English board)
         game_ortho = make_custom_board(9, [(4, 2), (4, 3)], board_type="English")
         initial_peg_count = game_ortho.count_pegs()
@@ -243,6 +260,7 @@ class TestMakeMove(unittest.TestCase):
 
     # AC 4.3: Rejecting an illegal destination.
     def test_ac_4_3_illegal_move_leaves_board_unchanged(self):
+        """Verifies that attempting an illegal move leaves the board and peg counts completely unchanged"""
         game = make_custom_board(9, [(4, 2), (4, 3)])
         original_board = [row[:] for row in game.board]
         initial_peg_count = game.count_pegs()
@@ -255,6 +273,7 @@ class TestMakeMove(unittest.TestCase):
 
     # AC 4.4: Rejecting an empty hole or a peg with no legal moves.
     def test_ac_4_4_empty_or_immobile_position_has_no_legal_moves(self):
+        """Verifies that empty holes and isolated pegs yield no legal moves."""
         game = make_custom_board(9, [(0, 4)])
 
         # The empty hole is not a valid starting peg.
@@ -281,10 +300,11 @@ class TestMakeMove(unittest.TestCase):
 
 # Story 5 ======================
 class TestGameOver(unittest.TestCase):
-    """Tests for User Story 5: A game is over."""
+    """Unit tests for game over conditions, win evaluation, and ratings."""
 
     # AC 5.1: Game ends when no legal moves remain.
     def test_ac_5_1_no_legal_moves_remain(self):
+        """Verifies game state evaluation when no legal moves remain."""
         game = make_custom_board(9, [(0, 4), (4, 0)])
 
         self.assertFalse(game.game_over_check())
@@ -294,6 +314,7 @@ class TestGameOver(unittest.TestCase):
 
     # AC 5.2: Winning the game with one peg remaining.
     def test_ac_5_2_one_peg_remaining_is_a_win(self):
+        """Verifies that leaving exactly one peg results in a win and outstanding rating."""
         game = make_custom_board(9, [(4, 2), (4, 3)])
 
         result = game.make_move((4, 2), (4, 4))
@@ -306,6 +327,7 @@ class TestGameOver(unittest.TestCase):
 
     # AC 5.3: Game continues while legal moves exist.
     def test_ac_5_3_game_continues_when_legal_moves_remain(self):
+        """Verifies that the game continues when valid moves are still available."""
         game = make_custom_board(9, [(4, 2), (4, 3), (4, 6), (4, 7)])
 
         result = game.make_move((4, 2), (4, 4))
@@ -323,7 +345,7 @@ class TestGameOver(unittest.TestCase):
 
     # AC 5.5: Starting a new game after game over.
     @unittest.skip(
-        "GUI-only: manually verify restarting creates a fresh board and clears the game-over message."
+        "GUI-only: manually verify restarting creates a fresh board and clears the game over message."
     )
     def test_ac_5_5_restart_after_game_over(self):
         pass
@@ -369,6 +391,7 @@ class TestWinningPlaythrough(unittest.TestCase):
     ]
 
     def test_english_7_full_winning_game(self):
+        """Executes a full 31-step winning playthrough and verifies the final win condition."""
         game = Board("English", 7)
         self.assertEqual(game.count_pegs(), 32)
 

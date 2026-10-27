@@ -1,4 +1,6 @@
 class Board:
+    """Manages Peg Solitaire game logic board state, layout generation, move validation, and win/loss"""
+
     VALID_SIZES = (5, 7, 9)
     VALID_TYPES = ("English", "Hexagon", "Diamond")
     DEFAULT_SIZE = 7
@@ -15,6 +17,7 @@ class Board:
     ]
 
     def __init__(self, board_type="English", size=7):  # English and size 7 default
+        """Initializes board type, dimensions, and populations 2D grid with pegs, invalid spaces, and center gap"""
         # Needed code for some earlier bug fix checks iwth unit tests
         # match the board type no matter the capitalization ("hexagon" -> "Hexagon") # Bug fix from earlier test cases
         board_type = str(board_type).capitalize()
@@ -50,6 +53,7 @@ class Board:
         self.board[center_pos][center_pos] = "EMPTY"
 
     def is_english_corner(self, row, col):
+        """Determines if a given grid coordinates falls within an invalid corner for an English Style board"""
         corner_depth = (self.size - 3) // 2
 
         # check to see if a position is part of the corner boundary
@@ -60,11 +64,15 @@ class Board:
         return is_corner_row and is_corner_col
 
     def is_diamond_corner(self, row, col):
+        """Determines if a given grid coordinates falls within an invalid corner for a Diamond Style board"""
+
         center = self.size // 2
         # if the combined row and colum exceeds the center radius
         return abs(row - center) + abs(col - center) > center
 
     def is_hexagon_corner(self, row, col):
+        """Determines if a given grid coordinates falls within an invalid corner for a Hexagon board"""
+
         corner_depth = (self.size - 3) // 2
 
         # Mark out the corners
@@ -76,6 +84,7 @@ class Board:
         return top_left or top_right or bottom_left or bottom_right
 
     def is_valid_move(self, start_pos, end_pos):  # pos parameters are tuples
+        """Checks if a jumping peg from a starting position to an end position follows the game rules"""
         # unpack coordinates
         r1, c1 = start_pos
         r2, c2 = end_pos
@@ -107,6 +116,7 @@ class Board:
         return self.board[mid_r][mid_c] == "PEG"
 
     def get_legal_moves(self, pos):
+        """Returns a list of all valid moves a peg can jump to from a given position on the board"""
         r, c = pos
         legal_moves = []
 
@@ -118,6 +128,7 @@ class Board:
         return legal_moves
 
     def is_valid_size(value):
+        """Validates whether a given board follows matched allowed dimensions"""
         # Checks to see if valid size
         if isinstance(value, bool):
             return False
@@ -130,6 +141,7 @@ class Board:
         return isinstance(value, (int, str)) and int(value) in Board.VALID_SIZES
 
     def make_move(self, start_pos, end_pos):
+        """Executes a valid peg jump, updating the board grid by removing jumped peg and moving active peg"""
         # Check for valid move
         if not self.is_valid_move(start_pos, end_pos):
             return False
@@ -153,6 +165,7 @@ class Board:
         return True
 
     def game_over_check(self):
+        """Checks if any moves remain on the board to be played"""
         # Go through each position, if there is a peg, check if there is a valid move
         for row in range(self.size):
             for col in range(self.size):
@@ -164,6 +177,7 @@ class Board:
         return False
 
     def check_win(self):
+        """Evaluates if the player has won or lost if there is one peg remaining"""
         # Count the total number of pegs currently on the board
         peg_count = 0
         for row in range(self.size):
@@ -175,6 +189,7 @@ class Board:
         return peg_count == 1
 
     def get_rating(self):
+        """Generates a performance rating to the user based on final peg count"""
         peg_count = 0
         for row in range(self.size):
             for col in range(self.size):
@@ -191,6 +206,7 @@ class Board:
             return f"Rating: Average 4 or more left ({peg_count} left)"
 
     def count_pegs(self):
+        """Counts and returns the current number of pegs active on the board"""
         peg_count = 0
         for row in range(self.size):
             for col in range(self.size):
